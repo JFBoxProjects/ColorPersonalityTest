@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2575.4">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="en"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;title&gt;Personality Test&lt;/title&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>body {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>font-family: Arial, sans-serif;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: #f9f9f9;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.question {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: #fff;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 15px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-bottom: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>box-shadow: 0 0 5px rgba(0,0,0,0.1);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.question h3 {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-bottom: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.inputs label {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>display: inline-block;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>width: 240px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.inputs input[type="number"] {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>width: 50px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-right: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.result {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-top: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: #e0ffe0;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 5px;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>button {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>margin-top: 15px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>padding: 10px 20px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>background: #007BFF;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>color: white;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border: none;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 5px;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>cursor: pointer;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;h1&gt;Personality Test&lt;/h1&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;form id="personalityForm"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- 20 Questions --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="questions"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- Use a JS array to simplify generation if later migrated to SPA --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;!-- Below are the manually added 20 sets --&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const questions = [</p>
+<p class="p1"><span class="Apple-converted-space">          </span>["Encourager", "Deep thinker", "Doer", "Listener"],</p>
+<p class="p1"><span class="Apple-converted-space">          </span>["Motivator", "Organizer", "Achiever", "Mediator"],</p>
+<p class="p1"><span class="Apple-converted-space">          </span>["Charismatic", "Realistic", "Dynamic", "Diplomatic"],</p>
+<p class="p1"><span class="Apple-converted-space">          </span>["Stimulating", "Systematic", "Decisive", "Accommodating"],</p>
+<p class="p1"><span class="Apple-converted-space">          </span>["Spontaneous", "Perfectionist", "Risking", "Accepting"],</p>
+<p class="p1"><span class="Apple-converted-space">          </span>["Cheerful", "Purposeful", "Forceful", "Tactful"],</p>
+<p class="p1"><span class="Apple-converted-space">          </span>["Promoter", "Planner", "Producer", "Supporter"],</p>
+<p class="p1"><span class="Apple-converted-space">          </span>["Interrupts", "Critical", "Impatient", "Indifferent"],</p>
+<p class="p1"><span class="Apple-converted-space">          </span>["Unfocused", "Pessimistic", "Controlling", "Indecisive"],</p>
+<p class="p1"><span class="Apple-converted-space">          </span>["Persuasive", "Diligent", "Competitive", "Compassionate"],</p>
+<p class="p1"><span class="Apple-converted-space">          </span>["Fun &amp; freedom", "Belonging &amp; contributing", "Power &amp; results", "Peace &amp; balance"],</p>
+<p class="p1"><span class="Apple-converted-space">          </span>["Variety &amp; activity", "Facts, data &amp; order", "Bottom line results", "Low key situations"],</p>
+<p class="p1"><span class="Apple-converted-space">          </span>["Loss of relationship", "Change &amp; disorder", "Loss of control", "Loss of harmony"],</p>
+<p class="p1"><span class="Apple-converted-space">          </span>["Affirmed &amp; recognized", "Appreciated for quality work", "Respected for accomplishments", "Accepted for who I am"],</p>
+<p class="p1"><span class="Apple-converted-space">          </span>["Knowing how to have a good time", "Doing things right", "Making things happen", "Making people feel accepted"],</p>
+<p class="p1"><span class="Apple-converted-space">          </span>["Outgoing &amp; social", "Accurate &amp; reliable", "Direct &amp; driven", "Patient &amp; neutral"],</p>
+<p class="p1"><span class="Apple-converted-space">          </span>["Verbally open &amp; casual", "Thoughtful &amp; do their part", "Competent &amp; get job done", "Caring &amp; kind"],</p>
+<p class="p1"><span class="Apple-converted-space">          </span>["My relationships with others", "My organization &amp; systems", "My accomplishments", "My stability"],</p>
+<p class="p1"><span class="Apple-converted-space">          </span>["Routine/repetition", "Unpredictability", "Incompetence", "Insensitivity"],</p>
+<p class="p1"><span class="Apple-converted-space">          </span>["Fragmented &amp; disorganized", "Moody &amp; withdrawn", "Dictatorial &amp; assertive", "Overwhelmed &amp; tired"]</p>
+<p class="p1"><span class="Apple-converted-space">        </span>];</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>document.addEventListener("DOMContentLoaded", () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">          </span>const form = document.getElementById("personalityForm");</p>
+<p class="p1"><span class="Apple-converted-space">          </span>const container = document.createElement("div");</p>
+<p class="p1"><span class="Apple-converted-space">          </span>questions.forEach((q, i) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const qDiv = document.createElement("div");</p>
+<p class="p1"><span class="Apple-converted-space">            </span>qDiv.classList.add("question");</p>
+<p class="p1"><span class="Apple-converted-space">            </span>qDiv.innerHTML = `&lt;h3&gt;${i + 1}. Rank the following (1-4)&lt;/h3&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const inputBlock = document.createElement("div");</p>
+<p class="p1"><span class="Apple-converted-space">            </span>inputBlock.classList.add("inputs");</p>
+<p class="p1"><span class="Apple-converted-space">            </span>inputBlock.innerHTML = `</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;label&gt;${q[0]}&lt;/label&gt;&lt;input type="number" name="q${i + 1}a" min="1" max="4"&gt;&lt;br&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;label&gt;${q[1]}&lt;/label&gt;&lt;input type="number" name="q${i + 1}b" min="1" max="4"&gt;&lt;br&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;label&gt;${q[2]}&lt;/label&gt;&lt;input type="number" name="q${i + 1}c" min="1" max="4"&gt;&lt;br&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;label&gt;${q[3]}&lt;/label&gt;&lt;input type="number" name="q${i + 1}d" min="1" max="4"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>`;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>qDiv.appendChild(inputBlock);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>container.appendChild(qDiv);</p>
+<p class="p1"><span class="Apple-converted-space">          </span>});</p>
+<p class="p1"><span class="Apple-converted-space">          </span>form.insertBefore(container, form.querySelector("button"));</p>
+<p class="p1"><span class="Apple-converted-space">        </span>});</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;button type="button" onclick="calculateResults()"&gt;Submit&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/form&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="result" id="result"&gt;&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>function calculateResults() {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const totals = { A: 0, B: 0, C: 0, D: 0 };</p>
+<p class="p1"><span class="Apple-converted-space">      </span>for (let i = 1; i &lt;= 20; i++) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>totals.A += parseInt(document.querySelector(`input[name="q${i}a"]`).value || 0);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>totals.B += parseInt(document.querySelector(`input[name="q${i}b"]`).value || 0);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>totals.C += parseInt(document.querySelector(`input[name="q${i}c"]`).value || 0);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>totals.D += parseInt(document.querySelector(`input[name="q${i}d"]`).value || 0);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>const sorted = Object.entries(totals).sort((a, b) =&gt; b[1] - a[1]);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const colors = { A: "Blue", B: "Green", C: "Red", D: "Yellow" };</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>let resultText = `&lt;strong&gt;Your Personality Ranking:&lt;/strong&gt;&lt;br&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>sorted.forEach(([key, value]) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>resultText += `${colors[key]}: ${value}&lt;br&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">      </span>document.getElementById("result").innerHTML = resultText;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+</body>
+</html>
