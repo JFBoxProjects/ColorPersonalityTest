@@ -1,279 +1,200 @@
-<!DOCTYPE html>
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Personality Test</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      background: #f9f9f9;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Personality Skills Indicator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            blue: '#3b82f6',
+            green: '#10b981',
+            yellow: '#f59e0b',
+            red: '#ef4444',
+          },
+        },
+      },
     }
-    .question {
-      background: #fff;
-      padding: 15px;
-      margin-bottom: 10px;
-      border-radius: 8px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-    }
-    .question h3 {
-      margin-bottom: 10px;
-    }
-    .inputs label {
-      display: inline-block;
-      width: 240px;
-    }
-    .inputs input[type="number"] {
-      width: 50px;
-      margin-right: 20px;
-    }
-    .result {
-      margin-top: 20px;
-      padding: 10px;
-      background: #e0ffe0;
-      border-radius: 5px;
-    }
-    button {
-      margin-top: 15px;
-      padding: 10px 20px;
-      background: #007BFF;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-  </style>
+  </script>
 </head>
 <body>
-  <h1>Personality Test</h1>
-  <form id="personalityForm">
+  <div id="root"></div>
+  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/babel-standalone@7.22.10/babel.min.js"></script>
+  <script type="text/babel">
+    const { useState } = React;
 
-    <div class="question">
-      <h3>1. Rank the following (1–4)</h3>
-      <div class="inputs">
-        <label>Encourager</label><input type="number" name="q1a" min="1" max="4"><br>
-        <label>Deep thinker</label><input type="number" name="q1b" min="1" max="4"><br>
-        <label>Doer</label><input type="number" name="q1c" min="1" max="4"><br>
-        <label>Listener</label><input type="number" name="q1d" min="1" max="4">
-      </div>
-    </div>
-    
-    <div class="question">
-      <h3>2. Rank the following (1–4)</h3>
-      <div class="inputs">
-        <label>Motivator</label><input type="number" name="q2a" min="1" max="4"><br>
-        <label>Organizer</label><input type="number" name="q2b" min="1" max="4"><br>
-        <label>Achiever</label><input type="number" name="q2c" min="1" max="4"><br>
-        <label>Mediator</label><input type="number" name="q2d" min="1" max="4">
-      </div>
-    </div>
-    
-    <div class="question">
-      <h3>3. Rank the following (1–4)</h3>
-      <div class="inputs">
-        <label>Charismatic</label><input type="number" name="q3a" min="1" max="4"><br>
-        <label>Realistic</label><input type="number" name="q3b" min="1" max="4"><br>
-        <label>Dynamic</label><input type="number" name="q3c" min="1" max="4"><br>
-        <label>Diplomatic</label><input type="number" name="q3d" min="1" max="4">
-      </div>
-    </div>
-    
-    <div class="question">
-      <h3>4. Rank the following (1–4)</h3>
-      <div class="inputs">
-        <label>Stimulating</label><input type="number" name="q4a" min="1" max="4"><br>
-        <label>Systematic</label><input type="number" name="q4b" min="1" max="4"><br>
-        <label>Decisive</label><input type="number" name="q4c" min="1" max="4"><br>
-        <label>Accommodating</label><input type="number" name="q4d" min="1" max="4">
-      </div>
-    </div>
-    
-    <div class="question">
-      <h3>5. Rank the following (1–4)</h3>
-      <div class="inputs">
-        <label>Spontaneous</label><input type="number" name="q5a" min="1" max="4"><br>
-        <label>Perfectionist</label><input type="number" name="q5b" min="1" max="4"><br>
-        <label>Risking</label><input type="number" name="q5c" min="1" max="4"><br>
-        <label>Accepting</label><input type="number" name="q5d" min="1" max="4">
-      </div>
-    </div>
-    
-    <div class="question">
-      <h3>6. Rank the following (1–4)</h3>
-      <div class="inputs">
-        <label>Cheerful</label><input type="number" name="q6a" min="1" max="4"><br>
-        <label>Purposeful</label><input type="number" name="q6b" min="1" max="4"><br>
-        <label>Forceful</label><input type="number" name="q6c" min="1" max="4"><br>
-        <label>Tactful</label><input type="number" name="q6d" min="1" max="4">
-      </div>
-    </div>
-    
-    <div class="question">
-      <h3>7. Rank the following (1–4)</h3>
-      <div class="inputs">
-        <label>Promoter</label><input type="number" name="q7a" min="1" max="4"><br>
-        <label>Planner</label><input type="number" name="q7b" min="1" max="4"><br>
-        <label>Producer</label><input type="number" name="q7c" min="1" max="4"><br>
-        <label>Supporter</label><input type="number" name="q7d" min="1" max="4">
-      </div>
-    </div>
-    
-    <div class="question">
-      <h3>8. Rank the following (1–4)</h3>
-      <div class="inputs">
-        <label>Interrupts</label><input type="number" name="q8a" min="1" max="4"><br>
-        <label>Critical</label><input type="number" name="q8b" min="1" max="4"><br>
-        <label>Impatient</label><input type="number" name="q8c" min="1" max="4"><br>
-        <label>Indifferent</label><input type="number" name="q8d" min="1" max="4">
-      </div>
-    </div>
-    
-    <div class="question">
-      <h3>9. Rank the following (1–4)</h3>
-      <div class="inputs">
-        <label>Unfocused</label><input type="number" name="q9a" min="1" max="4"><br>
-        <label>Pessimistic</label><input type="number" name="q9b" min="1" max="4"><br>
-        <label>Controlling</label><input type="number" name="q9c" min="1" max="4"><br>
-        <label>Indecisive</label><input type="number" name="q9d" min="1" max="4">
-      </div>
-    </div>
-    
-    <div class="question">
-      <h3>10. Rank the following (1–4)</h3>
-      <div class="inputs">
-        <label>Persuasive</label><input type="number" name="q10a" min="1" max="4"><br>
-        <label>Diligent</label><input type="number" name="q10b" min="1" max="4"><br>
-        <label>Competitive</label><input type="number" name="q10c" min="1" max="4"><br>
-        <label>Compassionate</label><input type="number" name="q10d" min="1" max="4">
-      </div>
-    </div>
-    
-    <div class="question">
-      <h3>11. Rank the following (1–4)</h3>
-      <div class="inputs">
-        <label>Fun & freedom</label><input type="number" name="q11a" min="1" max="4"><br>
-        <label>Belonging & contributing</label><input type="number" name="q11b" min="1" max="4"><br>
-        <label>Power & results</label><input type="number" name="q11c" min="1" max="4"><br>
-        <label>Peace & balance</label><input type="number" name="q11d" min="1" max="4">
-      </div>
-    </div>
-    
-    <div class="question">
-      <h3>12. Rank the following (1–4)</h3>
-      <div class="inputs">
-        <label>Variety & activity</label><input type="number" name="q12a" min="1" max="4"><br>
-        <label>Facts, data & order</label><input type="number" name="q12b" min="1" max="4"><br>
-        <label>Bottom line results</label><input type="number" name="q12c" min="1" max="4"><br>
-        <label>Low key situations</label><input type="number" name="q12d" min="1" max="4">
-      </div>
-    </div>
-    
-    <div class="question">
-      <h3>13. Rank the following (1–4)</h3>
-      <div class="inputs">
-        <label>Loss of relationship</label><input type="number" name="q13a" min="1" max="4"><br>
-        <label>Change & disorder</label><input type="number" name="q13b" min="1" max="4"><br>
-        <label>Loss of control</label><input type="number" name="q13c" min="1" max="4"><br>
-        <label>Loss of harmony</label><input type="number" name="q13d" min="1" max="4">
-      </div>
-    </div>
-    
-    <div class="question">
-      <h3>14. Rank the following (1–4)</h3>
-      <div class="inputs">
-        <label>Affirmed & recognized</label><input type="number" name="q14a" min="1" max="4"><br>
-        <label>Appreciated for quality work</label><input type="number" name="q14b" min="1" max="4"><br>
-        <label>Respected for accomplishments</label><input type="number" name="q14c" min="1" max="4"><br>
-        <label>Accepted for who I am</label><input type="number" name="q14d" min="1" max="4">
-      </div>
-    </div>
-    
-    <div class="question">
-      <h3>15. Rank the following (1–4)</h3>
-      <div class="inputs">
-        <label>Knowing how to have a good time</label><input type="number" name="q15a" min="1" max="4"><br>
-        <label>Doing things right</label><input type="number" name="q15b" min="1" max="4"><br>
-        <label>Making things happen</label><input type="number" name="q15c" min="1" max="4"><br>
-        <label>Making people feel accepted</label><input type="number" name="q15d" min="1" max="4">
-      </div>
-    </div>
-    
-    <div class="question">
-      <h3>16. Rank the following (1–4)</h3>
-      <div class="inputs">
-        <label>Outgoing & social</label><input type="number" name="q16a" min="1" max="4"><br>
-        <label>Accurate & reliable</label><input type="number" name="q16b" min="1" max="4"><br>
-        <label>Direct & driven</label><input type="number" name="q16c" min="1" max="4"><br>
-        <label>Patient & neutral</label><input type="number" name="q16d" min="1" max="4">
-      </div>
-    </div>
-    
-    <div class="question">
-      <h3>17. Rank the following (1–4)</h3>
-      <div class="inputs">
-        <label>Verbally open & casual</label><input type="number" name="q17a" min="1" max="4"><br>
-        <label>Thoughtful & do their part</label><input type="number" name="q17b" min="1" max="4"><br>
-        <label>Competent & get job done</label><input type="number" name="q17c" min="1" max="4"><br>
-        <label>Caring & kind</label><input type="number" name="q17d" min="1" max="4">
-      </div>
-    </div>
-    
-    <div class="question">
-      <h3>18. Rank the following (1–4)</h3>
-      <div class="inputs">
-        <label>My relationships with others</label><input type="number" name="q18a" min="1" max="4"><br>
-        <label>My organization & systems</label><input type="number" name="q18b" min="1" max="4"><br>
-        <label>My accomplishments</label><input type="number" name="q18c" min="1" max="4"><br>
-        <label>My stability</label><input type="number" name="q18d" min="1" max="4">
-      </div>
-    </div>
-    
-    <div class="question">
-      <h3>19. Rank the following (1–4)</h3>
-      <div class="inputs">
-        <label>Routine/repetition</label><input type="number" name="q19a" min="1" max="4"><br>
-        <label>Unpredictability</label><input type="number" name="q19b" min="1" max="4"><br>
-        <label>Incompetence</label><input type="number" name="q19c" min="1" max="4"><br>
-        <label>Insensitivity</label><input type="number" name="q19d" min="1" max="4">
-      </div>
-    </div>
-    
-    <div class="question">
-      <h3>20. Rank the following (1–4)</h3>
-      <div class="inputs">
-        <label>Fragmented & disorganized</label><input type="number" name="q20a" min="1" max="4"><br>
-        <label>Moody & withdrawn</label><input type="number" name="q20b" min="1" max="4"><br>
-        <label>Dictatorial & assertive</label><input type="number" name="q20c" min="1" max="4"><br>
-        <label>Overwhelmed & tired</label><input type="number" name="q20d" min="1" max="4">
-      </div>
-    </div>
-    
-    <button type="button" onclick="calculateResults()">Submit</button>
-  </form>
+    const questions = [
+      { id: 1, prompt: "I am:", options: { yellow: "Encourager", green: "Deep thinker", red: "Doer", blue: "Listener" } },
+      { id: 2, prompt: "I am:", options: { yellow: "Motivator", green: "Organizer", red: "Achiever", blue: "Mediator" } },
+      { id: 3, prompt: "I am:", options: { yellow: "Charismatic", green: "Realistic", red: "Dynamic", blue: "Diplomatic" } },
+      { id: 4, prompt: "I am:", options: { yellow: "Stimulating", green: "Systematic", red: "Decisive", blue: "Accommodating" } },
+      { id: 5, prompt: "I am:", options: { yellow: "Spontaneous", green: "Perfectionist", red: "Risking", blue: "Accepting" } },
+      { id: 6, prompt: "I am:", options: { yellow: "Cheerful", green: "Purposeful", red: "Forceful", blue: "Tactful" } },
+      { id: 7, prompt: "I am:", options: { yellow: "Promoter", green: "Planner", red: "Producer", blue: "Supporter" } },
+      { id: 8, prompt: "I can be:", options: { yellow: "Interrupts", green: "Critical", red: "Impatient", blue: "Indifferent" } },
+      { id: 9, prompt: "I can be:", options: { yellow: "Unfocused", green: "Pessimistic", red: "Controlling", blue: "Indecisive" } },
+      { id: 10, prompt: "I am:", options: { yellow: "Persuasive", green: "Diligent", red: "Competitive", blue: "Compassionate" } },
+      { id: 11, prompt: "I am motivated by:", options: { yellow: "Fun & freedom", green: "Belonging & contributing", red: "Power & results", blue: "Peace & balance" } },
+      { id: 12, prompt: "I like:", options: { yellow: "Variety & activity", green: "Facts, data & order", red: "Bottom line results", blue: "Low key situations" } },
+      { id: 13, prompt: "I fear:", options: { yellow: "Loss of relationship", green: "Change & disorder", red: "Loss of control", blue: "Loss of harmony" } },
+      { id: 14, prompt: "I need to be:", options: { yellow: "Affirmed & recognized", green: "Appreciated for my quality work", red: "Respected for my accomplishments", blue: "Accepted for who I am" } },
+      { id: 15, prompt: "I am known for:", options: { yellow: "Knowing how to have a good time", green: "Doing things right", red: "Making things happen", blue: "Making people feel accepted" } },
+      { id: 16, prompt: "At work I would be described as:", options: { yellow: "Outgoing & social", green: "Accurate & reliable", red: "Direct & driven", blue: "Patient & neutral" } },
+      { id: 17, prompt: "I like being with people who are:", options: { yellow: "Verbally open & casual", green: "Thoughtful & do their part", red: "Competent & get their job done", blue: "Caring & kind" } },
+      { id: 18, prompt: "A key part of who I am is:", options: { yellow: "My relationships with others", green: "My organization & systems", red: "My accomplishments", blue: "My stability" } },
+      { id: 19, prompt: "I am frustrated by:", options: { yellow: "Routine/repetition", green: "Unpredictability", red: "Incompetence", blue: "Insensitivity" } },
+      { id: 20, prompt: "Under stress I become:", options: { yellow: "Fragmented & disorganized", green: "Moody & withdrawn", red: "Dictatorial & assertive", blue: "Overwhelmed & tired" } },
+    ];
 
-  <div class="result" id="result"></div>
+    function Question({ question, rankings, setRankings }) {
+      const handleRankChange = (color, value) => {
+        const newRankings = { ...rankings };
+        const currentQuestion = newRankings[question.id] || {};
+        const prevValue = Object.keys(currentQuestion).find(key => currentQuestion[key] === parseInt(value));
 
-  <script>
-    function calculateResults() {
-      const totals = { A: 0, B: 0, C: 0, D: 0 };
-      for (let i = 1; i <= 20; i++) {
-        totals.A += parseInt(document.querySelector(`input[name="q${i}a"]`).value || 0);
-        totals.B += parseInt(document.querySelector(`input[name="q${i}b"]`).value || 0);
-        totals.C += parseInt(document.querySelector(`input[name="q${i}c"]`).value || 0);
-        totals.D += parseInt(document.querySelector(`input[name="q${i}d"]`).value || 0);
-      }
+        if (prevValue) {
+          delete currentQuestion[prevValue];
+        }
 
-      const sorted = Object.entries(totals).sort((a, b) => b[1] - a[1]);
-      const colors = { A: "Blue", B: "Green", C: "Red", D: "Yellow" };
+        Object.keys(currentQuestion).forEach(key => {
+          if (currentQuestion[key] === parseInt(value)) {
+            delete currentQuestion[key];
+          }
+        });
 
-      let resultText = `<strong>Your Personality Ranking:</strong><br>`;
-      sorted.forEach(([key, value]) => {
-        resultText += `${colors[key]}: ${value}<br>`;
+        currentQuestion[color] = parseInt(value);
+        newRankings[question.id] = currentQuestion;
+        setRankings(newRankings);
+      };
+
+      return (
+        <div className="mb-6 p-4 border rounded-lg bg-gray-50">
+          <h3 className="text-lg font-semibold mb-2">{question.prompt}</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {Object.entries(question.options).map(([color, text]) => (
+              <div key={color} className="flex items-center space-x-2">
+                <label className="flex-1">{text}</label>
+                <select
+                  className="border rounded p-1 bg-white"
+                  value={rankings[question.id]?.[color] || ""}
+                  onChange={(e) => handleRankChange(color, e.target.value)}
+                >
+                  <option value="" disabled>Select</option>
+                  {[1, 2, 3, 4].map(num => (
+                    <option
+                      key={num}
+                      value={num}
+                      disabled={Object.values(rankings[question.id] || {}).includes(num) && rankings[question.id]?.[color] !== num}
+                    >
+                      {num}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    function Results({ rankings }) {
+      const totals = { yellow: 0, green: 0, red: 0, blue: 0 };
+      Object.values(rankings).forEach(question => {
+        Object.entries(question).forEach(([color, rank]) => {
+          totals[color] += rank;
+        });
       });
 
-      document.getElementById("result").innerHTML = resultText;
+      const sortedResults = Object.entries(totals)
+        .map(([color, score]) => ({ color, score }))
+        .sort((a, b) => b.score - a.score);
+
+      return (
+        <div className="mt-8 p-6 border rounded-lg bg-white">
+          <h2 className="text-2xl font-bold mb-4">Your Personality Results</h2>
+          <ul className="space-y-2">
+            {sortedResults.map(({ color, score }) => (
+              <li key={color} className="flex items-center space-x-2">
+                <span className={`w-4 h-4 rounded-full bg-${color}-500`}></span>
+                <span className="capitalize">{color}: {score} points</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      );
     }
+
+    function App() {
+      const [rankings, setRankings] = useState({});
+      const allQuestionsAnswered = Object.keys(rankings).length === questions.length &&
+        questions.every(q => Object.keys(rankings[q.id] || {}).length === 4);
+
+      return (
+        <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+          <div className="max-w-3xl w-full bg-white shadow-lg rounded-lg p-6">
+            <h1 className="text-3xl font-bold text-center mb-6">Personality Skills Indicator</h1>
+            <p className="text-center mb-8 text-gray-600">
+              For each question, rank the options from 1 (least like you) to 4 (most like you). Each number can only be used once per question.
+            </p>
+            {questions.map(question => (
+              <Question
+                key={question.id}
+                question={question}
+                rankings={rankings}
+                setRankings={setRankings}
+              />
+            ))}
+            {allQuestionsAnswered && <Results rankings={rankings} />}
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.render(<App />, document.getElementById('root'));
   </script>
 </body>
 </html>
