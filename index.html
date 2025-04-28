@@ -42,24 +42,52 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Personality Skills Indicator</title>
+  <title>Color Personality Test</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            blue: '#3b82f6',
+            primary: '#1e3a8a', // Deep blue for headers/background
+            secondary: '#f3f4f6', // Light gray for backgrounds
+            accent: '#6b7280', // Gray for text
+            yellow: '#f59e0b', // Personality type colors
             green: '#10b981',
-            yellow: '#f59e0b',
             red: '#ef4444',
+            blue: '#3b82f6',
+          },
+          animation: {
+            'gradient-swirl': 'gradient-swirl 3s ease infinite',
+          },
+          keyframes: {
+            'gradient-swirl': {
+              '0%, 100%': { 'background-position': '0% 50%' },
+              '50%': { 'background-position': '100% 50%' },
+            },
           },
         },
       },
     }
   </script>
+  <style>
+    .swirl-text {
+      background: linear-gradient(
+        45deg,
+        #f59e0b,
+        #10b981,
+        #ef4444,
+        #3b82f6,
+        #f59e0b
+      );
+      background-size: 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradient-swirl 3s ease infinite;
+    }
+  </style>
 </head>
-<body>
+<body className="bg-secondary">
   <div id="root"></div>
   <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.development.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.development.js"></script>
@@ -114,14 +142,14 @@
       };
 
       return (
-        <div className="mb-6 p-4 border rounded-lg bg-gray-50">
-          <h3 className="text-lg font-semibold mb-2">{question.prompt}</h3>
+        <div className="mb-6 p-4 border rounded-lg bg-white shadow-sm">
+          <h3 className="text-lg font-semibold text-primary mb-2">{question.prompt}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {Object.entries(question.options).map(([color, text]) => (
               <div key={color} className="flex items-center space-x-2">
-                <label className="flex-1">{text}</label>
+                <label className="flex-1 text-accent">{text}</label>
                 <select
-                  className="border rounded p-1 bg-white"
+                  className="border rounded p-1 bg-white text-accent focus:ring-2 focus:ring-primary"
                   value={rankings[question.id]?.[color] || ""}
                   onChange={(e) => handleRankChange(color, e.target.value)}
                 >
@@ -156,13 +184,13 @@
         .sort((a, b) => b.score - a.score);
 
       return (
-        <div className="mt-8 p-6 border rounded-lg bg-white">
-          <h2 className="text-2xl font-bold mb-4">Your Personality Results</h2>
+        <div className="mt-8 p-6 border rounded-lg bg-white shadow-sm">
+          <h2 className="text-2xl font-bold text-primary mb-4">Your Personality Results</h2>
           <ul className="space-y-2">
             {sortedResults.map(({ color, score }) => (
               <li key={color} className="flex items-center space-x-2">
                 <span className={`w-4 h-4 rounded-full bg-${color}-500`}></span>
-                <span className="capitalize">{color}: {score} points</span>
+                <span className="capitalize text-accent">{color}: {score} points</span>
               </li>
             ))}
           </ul>
@@ -183,7 +211,7 @@
 
       if (error) {
         return (
-          <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+          <div className="min-h-screen bg-secondary flex items-center justify-center p-4">
             <div className="max-w-3xl w-full bg-white shadow-lg rounded-lg p-6 text-red-500">
               <h1>Error: {error}</h1>
             </div>
@@ -192,12 +220,32 @@
       }
 
       return (
-        <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-          <div className="max-w-3xl w-full bg-white shadow-lg rounded-lg p-6">
-            <h1 className="text-3xl font-bold text-center mb-6">Personality Skills Indicator</h1>
-            <p className="text-center mb-8 text-gray-600">
-              For each question, rank the options from 1 (least like you) to 4 (most like you). Each number can only be used once per question.
-            </p>
+        <div className="min-h-screen bg-secondary flex flex-col items-center justify-center p-4">
+          <div className="max-w-4xl w-full bg-white shadow-lg rounded-lg p-8">
+            <h1 className="text-4xl font-bold text-center mb-6 swirl-text">Color Personality Test</h1>
+            <div className="mb-8">
+              <h2 className="text-xl font-semibold text-primary mb-2">Instructions</h2>
+              <p className="text-accent">
+                For each of the 20 questions below, rank the four options from 1 to 4 based on how well they describe you:
+                <ul className="list-disc ml-6 mt-2">
+                  <li><strong>4</strong>: Most like you</li>
+                  <li><strong>3</strong>: Next most like you</li>
+                  <li><strong>2</strong>: Next most like you</li>
+                  <li><strong>1</strong>: Least like you</li>
+                </ul>
+                Each number (1, 2, 3, 4) can only be used once per question. After completing all questions, your results will show your personality type scores (Yellow, Green, Red, Blue) in ranked order.
+              </p>
+            </div>
+            <div className="mb-8 p-4 bg-secondary rounded-lg">
+              <h2 className="text-xl font-semibold text-primary mb-2">Example</h2>
+              <p className="text-accent mb-2">For the question "I am:", you might rank the options as follows:</p>
+              <p className="text-accent">
+                DRAMATIC: <span className="font-bold text-yellow">3</span>, 
+                PRECISE: <span className="font-bold text-green">1</span>, 
+                POWERFUL: <span className="font-bold text-red">4</span>, 
+                ACCOMMODATING: <span className="font-bold text-blue">2</span>
+              </p>
+            </div>
             {questions.map(question => (
               <Question
                 key={question.id}
