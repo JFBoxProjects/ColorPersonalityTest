@@ -92,10 +92,12 @@
   <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.development.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.development.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.22.10/babel.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script type="text/babel">
     console.log("Script loaded, rendering React app...");
 
     const { useState, useEffect } = React;
+    const { jsPDF } = window.jspdf;
 
     const questions = [
       { id: 1, prompt: "I am:", options: { yellow: "Encourager", green: "Deep thinker", red: "Doer", blue: "Listener" } },
@@ -211,6 +213,60 @@
         }))
         .sort((a, b) => b.score - a.score);
 
+      const handleDownloadPDF = () => {
+        const doc = new jsPDF();
+        let yPosition = 20;
+
+        // Title
+        doc.setFontSize(16);
+        doc.setTextColor(30, 58, 138); // RGB equivalent of primary color (#1e3a8a)
+        doc.text("Color Personality Test Results", 20, yPosition);
+        yPosition += 10;
+
+        // Score Totals Section
+        doc.setFontSize(12);
+        doc.setTextColor(107, 114, 128); // RGB equivalent of accent color (#6b7280)
+        doc.text("Score Totals (Higher Scores Indicate Stronger Alignment)", 20, yPosition);
+        yPosition += 8;
+
+        sortedResults.forEach(({ color, score }) => {
+          doc.setFontSize(10);
+          doc.text(`${color.charAt(0).toUpperCase() + color.slice(1)}: ${score} points`, 20, yPosition);
+          yPosition += 6;
+        });
+
+        yPosition += 5;
+
+        // Personality Types and Explanations Section
+        doc.setFontSize(12);
+        doc.text("Personality Types and Explanations", 20, yPosition);
+        yPosition += 8;
+
+        sortedResults.forEach(({ color, type, explanation }) => {
+          // Personality Type Header
+          doc.setFontSize(11);
+          doc.setTextColor(0, 0, 0); // Black for readability
+          doc.text(`${color.charAt(0).toUpperCase() + color.slice(1)} - ${type}`, 20, yPosition);
+          yPosition += 6;
+
+          // Explanation
+          doc.setFontSize(9);
+          const splitText = doc.splitTextToSize(explanation.trim(), 170); // Wrap text within 170mm width
+          splitText.forEach(line => {
+            if (yPosition > 270) { // Check if we need a new page
+              doc.addPage();
+              yPosition = 20;
+            }
+            doc.text(line, 20, yPosition);
+            yPosition += 5;
+          });
+          yPosition += 5; // Extra spacing between sections
+        });
+
+        // Save the PDF
+        doc.save("personality_test_results.pdf");
+      };
+
       return (
         <div className="mt-8 p-6 border rounded-lg bg-white shadow-sm">
           <h2 className="text-2xl font-bold text-primary mb-4">Your Personality Results</h2>
@@ -230,6 +286,12 @@
               <p className="text-accent mt-2">{explanation}</p>
             </div>
           ))}
+          <button
+            onClick={handleDownloadPDF}
+            className="mt-4 px-4 py-2 bg-primary text-white rounded hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-primary"
+          >
+            Download Results as PDF
+          </button>
         </div>
       );
     }
