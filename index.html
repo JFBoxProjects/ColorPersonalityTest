@@ -196,7 +196,7 @@
       );
     }
 
-    function Results({ rankings }) {
+    function Results({ rankings, userName }) {
       const totals = { yellow: 0, green: 0, red: 0, blue: 0 };
       Object.values(rankings).forEach(question => {
         Object.entries(question).forEach(([color, rank]) => {
@@ -214,62 +214,68 @@
         .sort((a, b) => b.score - a.score);
 
       const handleDownloadPDF = (userName) => {
-        const doc = new jsPDF();
-        let yPosition = 20;
+        console.log("Download button clicked, generating PDF...");
+        try {
+          const doc = new jsPDF();
+          let yPosition = 20;
 
-        // User's Name
-        doc.setFontSize(14);
-        doc.setTextColor(30, 58, 138); // RGB equivalent of primary color (#1e3a8a)
-        doc.text(`Results for: ${userName || "Anonymous"}`, 20, yPosition);
-        yPosition += 10;
+          // User's Name
+          doc.setFontSize(14);
+          doc.setTextColor(30, 58, 138); // RGB equivalent of primary color (#1e3a8a)
+          doc.text(`Results for: ${userName || "Anonymous"}`, 20, yPosition);
+          yPosition += 10;
 
-        // Title
-        doc.setFontSize(16);
-        doc.text("Color Personality Test Results", 20, yPosition);
-        yPosition += 10;
+          // Title
+          doc.setFontSize(16);
+          doc.text("Color Personality Test Results", 20, yPosition);
+          yPosition += 10;
 
-        // Score Totals Section
-        doc.setFontSize(12);
-        doc.setTextColor(107, 114, 128); // RGB equivalent of accent color (#6b7280)
-        doc.text("Score Totals (Higher Scores Indicate Stronger Alignment)", 20, yPosition);
-        yPosition += 8;
+          // Score Totals Section
+          doc.setFontSize(12);
+          doc.setTextColor(107, 114, 128); // RGB equivalent of accent color (#6b7280)
+          doc.text("Score Totals (Higher Scores Indicate Stronger Alignment)", 20, yPosition);
+          yPosition += 8;
 
-        sortedResults.forEach(({ color, score }) => {
-          doc.setFontSize(10);
-          doc.text(`${color.charAt(0).toUpperCase() + color.slice(1)}: ${score} points`, 20, yPosition);
-          yPosition += 6;
-        });
-
-        yPosition += 5;
-
-        // Personality Types and Explanations Section
-        doc.setFontSize(12);
-        doc.text("Personality Types and Explanations", 20, yPosition);
-        yPosition += 8;
-
-        sortedResults.forEach(({ color, type, explanation }) => {
-          // Personality Type Header
-          doc.setFontSize(11);
-          doc.setTextColor(0, 0, 0); // Black for readability
-          doc.text(`${color.charAt(0).toUpperCase() + color.slice(1)} - ${type}`, 20, yPosition);
-          yPosition += 6;
-
-          // Explanation
-          doc.setFontSize(9);
-          const splitText = doc.splitTextToSize(explanation.trim(), 170); // Wrap text within 170mm width
-          splitText.forEach(line => {
-            if (yPosition > 270) { // Check if we need a new page
-              doc.addPage();
-              yPosition = 20;
-            }
-            doc.text(line, 20, yPosition);
-            yPosition += 5;
+          sortedResults.forEach(({ color, score }) => {
+            doc.setFontSize(10);
+            doc.text(`${color.charAt(0).toUpperCase() + color.slice(1)}: ${score} points`, 20, yPosition);
+            yPosition += 6;
           });
-          yPosition += 5; // Extra spacing between sections
-        });
 
-        // Save the PDF
-        doc.save(`personality_test_results_${userName || "anonymous"}.pdf`);
+          yPosition += 5;
+
+          // Personality Types and Explanations Section
+          doc.setFontSize(12);
+          doc.text("Personality Types and Explanations", 20, yPosition);
+          yPosition += 8;
+
+          sortedResults.forEach(({ color, type, explanation }) => {
+            // Personality Type Header
+            doc.setFontSize(11);
+            doc.setTextColor(0, 0, 0); // Black for readability
+            doc.text(`${color.charAt(0).toUpperCase() + color.slice(1)} - ${type}`, 20, yPosition);
+            yPosition += 6;
+
+            // Explanation
+            doc.setFontSize(9);
+            const splitText = doc.splitTextToSize(explanation.trim(), 170); // Wrap text within 170mm width
+            splitText.forEach(line => {
+              if (yPosition > 270) { // Check if we need a new page
+                doc.addPage();
+                yPosition = 20;
+              }
+              doc.text(line, 20, yPosition);
+              yPosition += 5;
+            });
+            yPosition += 5; // Extra spacing between sections
+          });
+
+          // Save the PDF
+          doc.save(`personality_test_results_${userName || "anonymous"}.pdf`);
+          console.log("PDF generated and download initiated.");
+        } catch (error) {
+          console.error("Error generating PDF:", error);
+        }
       };
 
       return (
