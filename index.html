@@ -213,13 +213,18 @@
         }))
         .sort((a, b) => b.score - a.score);
 
-      const handleDownloadPDF = () => {
+      const handleDownloadPDF = (userName) => {
         const doc = new jsPDF();
         let yPosition = 20;
 
+        // User's Name
+        doc.setFontSize(14);
+        doc.setTextColor(30, 58, 138); // RGB equivalent of primary color (#1e3a8a)
+        doc.text(`Results for: ${userName || "Anonymous"}`, 20, yPosition);
+        yPosition += 10;
+
         // Title
         doc.setFontSize(16);
-        doc.setTextColor(30, 58, 138); // RGB equivalent of primary color (#1e3a8a)
         doc.text("Color Personality Test Results", 20, yPosition);
         yPosition += 10;
 
@@ -264,7 +269,7 @@
         });
 
         // Save the PDF
-        doc.save("personality_test_results.pdf");
+        doc.save(`personality_test_results_${userName || "anonymous"}.pdf`);
       };
 
       return (
@@ -287,7 +292,7 @@
             </div>
           ))}
           <button
-            onClick={handleDownloadPDF}
+            onClick={() => handleDownloadPDF(userName)}
             className="mt-4 px-4 py-2 bg-primary text-white rounded hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-primary"
           >
             Download Results as PDF
@@ -299,6 +304,7 @@
     function App() {
       const [rankings, setRankings] = useState({});
       const [error, setError] = useState(null);
+      const [userName, setUserName] = useState("");
 
       const allQuestionsAnswered = Object.keys(rankings).length === questions.length &&
         questions.every(q => Object.keys(rankings[q.id] || {}).length === 4);
@@ -321,6 +327,17 @@
         <div className="min-h-screen bg-secondary flex flex-col items-center justify-center p-4">
           <div className="max-w-4xl w-full bg-white shadow-lg rounded-lg p-8">
             <h1 className="text-4xl font-bold text-center mb-6 swirl-text">Color Personality Test</h1>
+            <div className="mb-8 p-4 border rounded-lg bg-white shadow-sm">
+              <h2 className="text-xl font-semibold text-primary mb-2">Enter Your Name</h2>
+              <input
+                type="text"
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
+                placeholder="Enter your name"
+                className="w-full p-2 border rounded mb-4 text-accent focus:ring-2 focus:ring-primary"
+              />
+              <p className="text-accent">Please enter your name to personalize your results. If left blank, "Anonymous" will be used.</p>
+            </div>
             <div className="mb-8">
               <h2 className="text-xl font-semibold text-primary mb-2">Instructions</h2>
               <p className="text-accent">
@@ -352,7 +369,7 @@
                 setRankings={setRankings}
               />
             ))}
-            {allQuestionsAnswered && <Results rankings={rankings} />}
+            {allQuestionsAnswered && <Results rankings={rankings} userName={userName} />}
           </div>
         </div>
       );
