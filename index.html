@@ -432,7 +432,9 @@
             yPosition += 6;
 
             doc.setFontSize(9);
-            const splitText = doc.splitTextToSize(explanation.trim(), 170);
+            // Remove <strong> tags for PDF output
+            const cleanExplanation = explanation.replace(/<strong>|<\/strong>/g, '');
+            const splitText = doc.splitTextToSize(cleanExplanation.trim(), 170);
             splitText.forEach(line => {
               checkPageHeight(5);
               doc.text(line, 20, yPosition);
