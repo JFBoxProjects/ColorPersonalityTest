@@ -137,6 +137,22 @@
       { id: 2, prompt: "I am:", options: { yellow: "Motivator", green: "Organizer", red: "Achiever", blue: "Mediator" } },
       { id: 3, prompt: "I am:", options: { yellow: "Charismatic", green: "Realistic", red: "Dynamic", blue: "Diplomatic" } },
       { id: 4, prompt: "I am:", options: { yellow: "Stimulating", green: "Systematic", red: "Decisive", blue: "Accommodating" } },
+      { id: 5, prompt: "I am:", options: { yellow: "Spontaneous", green: "Perfectionist", red: "Risking", blue: "Accepting" } },
+      { id: 6, prompt: "I am:", options: { yellow: "Cheerful", green: "Purposeful", red: "Forceful", blue: "Tactful" } },
+      { id: 7, prompt: "I am:", options: { yellow: "Promoter", green: "Planner", red: "Producer", blue: "Supporter" } },
+      { id: 8, prompt: "I am:", options: { yellow: "Interrupts", green: "Critical", red: "Impatient", blue: "Indifferent" } },
+      { id: 9, prompt: "I am:", options: { yellow: "Unfocused", green: "Pessimistic", red: "Controlling", blue: "Indecisive" } },
+      { id: 10, prompt: "I am:", options: { yellow: "Persuasive", green: "diligent", red: "Competitive", blue: "Compassionate" } },
+      { id: 11, prompt: "I am motivated by:", options: { yellow: "Fun & freedom", green: "Belonging & contributing", red: "Power & results", blue: "Peace & balance" } },
+      { id: 12, prompt: "I like:", options: { yellow: "Variety & activity", green: "Facts, data & order", red: "Bottom line results", blue: "Low key situations" } },
+      { id: 13, prompt: "I fear:", options: { yellow: "Loss of relationship", green: "Change & disorder", red: "Loss of control", blue: "Loss of harmony" } },
+      { id: 14, prompt: "I need to be:", options: { yellow: "Affirmed & recognized", green: "Appreciated for my quality work", red: "Respected for my accomplishments", blue: "Accepted for who I am" } },
+      { id: 15, prompt: "I am known for:", options: { yellow: "Knowing how to have a good time", green: "Doing things right", red: "Making things happen", blue: "Making people feel accepted" } },
+      { id: 16, prompt: "At work I would be described as:", options: { yellow: "Outgoing & social", green: "accurate & reliable", red: "Direct & driven", blue: "Patient & neutral" } },
+      { id: 17, prompt: "I like being with people who are:", options: { yellow: "Verbally open & casual", green: "Thoughtful & do their part", red: "Competent & get their job done", blue: "Caring & kind" } },
+      { id: 18, prompt: "A key part of who I am is:", options: { yellow: "My relationships with others", green: "My organization & systems", red: "My accomplishments", blue: "My stability" } },
+      { id: 19, prompt: "I am frustrated by:", options: { yellow: "Routine/repetition", green: "Unpredictability", red: "Incompetence", blue: "Insensitivity" } },
+      { id: 20, prompt: "Under stress I become:", options: { yellow: "Fragmented & disorganized", green: "Moody & withdrawn", red: "Dictatorial & assertive", blue: "Overwhelmed & tired" } },
     ];
 
     const personalityTypes = {
@@ -567,6 +583,7 @@
             {page === 1 && (
               <div className="text-center">
                 <h1 className="text-5xl font-bold mb-6 swirl-text">Color Personality Test</h1>
+                <p className="text-accent mb-6">Discover your personality type based on your color preferences!</p>
                 <button
                   onClick={() => setPage(2)}
                   className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-primary transition duration-200"
@@ -620,19 +637,11 @@
                   />
                 ))}
                 {allQuestionsAnswered && (
-                  <button
-                    onClick={() => setPage(3)}
-                    className="mt-4 px-6 py-3 bg-primary text-white rounded-lg hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-primary transition duration-200"
-                  >
-                    Submit
-                  </button>
+                  <ErrorBoundary>
+                    <Results rankings={rankings} userName={userName} />
+                  </ErrorBoundary>
                 )}
               </>
-            )}
-            {page === 3 && (
-              <ErrorBoundary>
-                <Results rankings={rankings} userName={userName} />
-              </ErrorBoundary>
             )}
           </div>
         </div>
