@@ -72,17 +72,21 @@
   </script>
   <style>
     body {
-      background: linear-gradient(45deg, #f59e0b, #10b981, #ef4444, #3b82f6, #f59e0b);
+      background: linear-gradient(45deg, #ef4444, #10b981, #3b82f6, #800080, #ef4444);
       background-size: 200% 200%;
       animation: gradient-swirl 3s ease infinite;
       min-height: 100vh;
     }
     .swirl-text {
-      background: linear-gradient(45deg, #f59e0b, #10b981, #ef4444, #3b82f6, #f59e0b);
+      background: linear-gradient(45deg, #ef4444, #10b981, #3b82f6, #800080, #ef4444);
       background-size: 200%;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       animation: gradient-swirl 3s ease infinite;
+    }
+    .content-container {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(5px);
     }
   </style>
 </head>
@@ -103,22 +107,6 @@
       { id: 2, prompt: "I am:", options: { yellow: "Motivator", green: "Organizer", red: "Achiever", blue: "Mediator" } },
       { id: 3, prompt: "I am:", options: { yellow: "Charismatic", green: "Realistic", red: "Dynamic", blue: "Diplomatic" } },
       { id: 4, prompt: "I am:", options: { yellow: "Stimulating", green: "Systematic", red: "Decisive", blue: "Accommodating" } },
-      // { id: 5, prompt: "I am:", options: { yellow: "Spontaneous", green: "Perfectionist", red: "Risking", blue: "Accepting" } },
-      // { id: 6, prompt: "I am:", options: { yellow: "Cheerful", green: "Purposeful", red: "Forceful", blue: "Tactful" } },
-      // { id: 7, prompt: "I am:", options: { yellow: "Promoter", green: "Planner", red: "Producer", blue: "Supporter" } },
-      // { id: 8, prompt: "I can be:", options: { yellow: "Interrupts", green: "Critical", red: "Impatient", blue: "Indifferent" } },
-      // { id: 9, prompt: "I can be:", options: { yellow: "Unfocused", green: "Pessimistic", red: "Controlling", blue: "Indecisive" } },
-      // { id: 10, prompt: "I am:", options: { yellow: "Persuasive", green: "Diligent", red: "Competitive", blue: "Compassionate" } },
-      // { id: 11, prompt: "I am motivated by:", options: { yellow: "Fun & freedom", green: "Belonging & contributing", red: "Power & results", blue: "Peace & balance" } },
-      // { id: 12, prompt: "I like:", options: { yellow: "Variety & activity", green: "Facts, data & order", red: "Bottom line results", blue: "Low key situations" } },
-      // { id: 13, prompt: "I fear:", options: { yellow: "Loss of relationship", green: "Change & disorder", red: "Loss of control", blue: "Loss of harmony" } },
-      // { id: 14, prompt: "I need to be:", options: { yellow: "Affirmed & recognized", green: "Appreciated for my quality work", red: "Respected for my accomplishments", blue: "Accepted for who I am" } },
-      // { id: 15, prompt: "I am known for:", options: { yellow: "Knowing how to have a good time", green: "Doing things right", red: "Making things happen", blue: "Making people feel accepted" } },
-      // { id: 16, prompt: "At work I would be described as:", options: { yellow: "Outgoing & social", green: "Accurate & reliable", red: "Direct & driven", blue: "Patient & neutral" } },
-      // { id: 17, prompt: "I like being with people who are:", options: { yellow: "Verbally open & casual", green: "Thoughtful & do their part", red: "Competent & get their job done", blue: "Caring & kind" } },
-      // { id: 18, prompt: "A key part of who I am is:", options: { yellow: "My relationships with others", green: "My organization & systems", red: "My accomplishments", blue: "My stability" } },
-      // { id: 19, prompt: "I am frustrated by:", options: { yellow: "Routine/repetition", green: "Unpredictability", red: "Incompetence", blue: "Insensitivity" } },
-      // { id: 20, prompt: "Under stress I become:", options: { yellow: "Fragmented & disorganized", green: "Moody & withdrawn", red: "Dictatorial & assertive", blue: "Overwhelmed & tired" } },
     ];
 
     const personalityTypes = {
@@ -148,7 +136,6 @@
       },
     };
 
-    // Additional content from provided PDFs (unchanged from previous version)
     const additionalContent = {
       plannerBlue: {
         title: "PLANNER (Blue) - The Melancholy",
@@ -307,6 +294,22 @@
       },
     };
 
+    function ErrorBoundary({ children }) {
+      const [hasError, setHasError] = useState(false);
+
+      useEffect(() => {
+        const handleError = () => setHasError(true);
+        window.addEventListener('error', handleError);
+        return () => window.removeEventListener('error', handleError);
+      }, []);
+
+      if (hasError) {
+        return <div className="text-red-500 p-4">Something went wrong. Please try again or refresh the page.</div>;
+      }
+
+      return children;
+    }
+
     function Question({ question, rankings, setRankings }) {
       const handleRankChange = (color, value) => {
         const newRankings = { ...rankings };
@@ -352,6 +355,7 @@
     }
 
     function Results({ rankings, userName }) {
+      console.log("Rendering Results, rankings:", rankings);
       const totals = { yellow: 0, green: 0, red: 0, blue: 0 };
       Object.values(rankings).forEach(question => {
         Object.entries(question).forEach(([color, rank]) => {
@@ -381,18 +385,15 @@
             }
           };
 
-          // User's Name
           doc.setFontSize(14);
           doc.setTextColor(30, 58, 138);
           doc.text(`Results for: ${userName || "Anonymous"}`, 20, yPosition);
           yPosition += 10;
 
-          // Title
           doc.setFontSize(16);
           doc.text("Color Personality Test Results", 20, yPosition);
           yPosition += 10;
 
-          // Score Totals Section
           doc.setFontSize(12);
           doc.setTextColor(107, 114, 128);
           doc.text("Score Totals (Higher Scores Indicate Stronger Alignment)", 20, yPosition);
@@ -406,7 +407,6 @@
 
           yPosition += 5;
 
-          // Personality Types and Explanations Section
           doc.setFontSize(12);
           doc.text("Personality Types and Explanations", 20, yPosition);
           yPosition += 8;
@@ -427,7 +427,6 @@
             yPosition += 5;
           });
 
-          // Additional Sections
           const sections = [
             additionalContent.plannerBlue,
             additionalContent.peacekeeperGreen,
@@ -461,7 +460,6 @@
             });
           });
 
-          // Personality Type Summary (Table)
           checkPageHeight(20);
           doc.setFontSize(14);
           doc.setTextColor(30, 58, 138);
@@ -490,8 +488,7 @@
             yPosition += 2;
           });
 
-          // Save the PDF
-          doc.save(`personality_test_results_${userName || "anonymous"}.pdf`);
+          doc.save(`personality_test_results_${userName || "anonymous"}.pdf");
           console.log("PDF generated and download initiated.");
         } catch (error) {
           console.error("Error generating PDF:", error);
@@ -499,53 +496,27 @@
       };
 
       return (
-        <div className="min-h-screen flex flex-col items-center justify-center p-4">
-          <div className="max-w-4xl w-full bg-white shadow-lg rounded-lg p-8">
-            <h1 className="text-4xl font-bold text-center swirl-text">Color Personality Test</h1>
-            <div className="mb-8 p-4 border rounded-lg bg-white shadow-sm">
-              <h2 className="text-xl font-semibold text-primary mb-2">Enter Your Name</h2>
-              <input
-                type="text"
-                value={userName}
-                onChange={(e) => setUserName(e.target.value)}
-                placeholder="Enter your name"
-                className="w-full p-2 border rounded mb-4 text-accent focus:ring-2 focus:ring-primary"
-              />
-              <p className="text-accent">Please enter your name to personalize your results. If left blank, "Anonymous" will be used.</p>
-            </div>
-            <div className="mb-8">
-              <h2 className="text-xl font-semibold text-primary mb-2">Instructions</h2>
-              <p className="text-accent">
-                For each of the questions below, rank the four options from 1 to 4 based on how well they describe you:
-                <ul className="list-disc ml-6 mt-2">
-                  <li><strong>4</strong>: Most like you</li>
-                  <li><strong>3</strong>: Next most like you</li>
-                  <li><strong>2</strong>: Next most like you</li>
-                  <li><strong>1</strong>: Least like you</li>
-                </ul>
-                Each number (1, 2, 3, 4) can only be used once per question. After completing all questions, your results will show your personality type scores (Yellow, Green, Red, Blue) in ranked order, along with their corresponding personality types and detailed explanations.
-              </p>
-            </div>
-            <div className="mb-8 p-4 bg-secondary rounded-lg">
-              <h2 className="text-xl font-semibold text-primary mb-2">Example</h2>
-              <p className="text-accent mb-2">For the question "I am:", you might rank the options as follows:</p>
-              <p className="text-accent">
-                DRAMATIC: <span className="font-bold text-yellow-500">3</span>, 
-                PRECISE: <span className="font-bold text-green-500">1</span>, 
-                POWERFUL: <span className="font-bold text-red-500">4</span>, 
-                ACCOMMODATING: <span className="font-bold text-blue-500">2</span>
-              </p>
-            </div>
-            {questions.map(question => (
-              <Question
-                key={question.id}
-                question={question}
-                rankings={rankings}
-                setRankings={setRankings}
-              />
+        <div className="mt-8 p-6 border rounded-lg bg-white shadow-sm">
+          <h2 className="text-2xl font-bold text-primary mb-4">Your Personality Results</h2>
+          <h3 className="text-xl font-semibold text-accent mb-4">Score Totals (Higher Scores Indicate Stronger Alignment)</h3>
+          <ul className="space-y-2 mb-6">
+            {sortedResults.map(({ color, score }) => (
+              <li key={color} className="flex items-center space-x-2">
+                <span className={`w-4 h-4 rounded-full bg-${color}-500`}></span>
+                <span className="capitalize text-accent font-medium">{color}: {score} points</span>
+              </li>
             ))}
-            {allQuestionsAnswered && <Results rankings={rankings} userName={userName} />}
-          </div>
+          </ul>
+          <h3 className="text-xl font-semibold text-accent mb-4">Personality Types and Explanations</h3>
+          {sortedResults.map(({ color, type, explanation }) => (
+            <div key={color} className="mb-6 p-4 bg-secondary rounded-lg" dangerouslySetInnerHTML={{ __html: explanation }} />
+          ))}
+          <button
+            onClick={() => handleDownloadPDF(userName)}
+            className="mt-4 px-4 py-2 bg-primary text-white rounded hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-primary"
+          >
+            Download Results as PDF
+          </button>
         </div>
       );
     }
@@ -557,6 +528,7 @@
 
       const allQuestionsAnswered = Object.keys(rankings).length === questions.length &&
         questions.every(q => Object.keys(rankings[q.id] || {}).length === 4);
+      console.log("allQuestionsAnswered:", allQuestionsAnswered, "rankings:", rankings);
 
       useEffect(() => {
         console.log("App mounted, rankings:", rankings);
@@ -564,7 +536,7 @@
 
       if (error) {
         return (
-          <div className="min-h-screen bg-secondary flex items-center justify-center p-4">
+          <div className="min-h-screen flex items-center justify-center p-4">
             <div className="max-w-3xl w-full bg-white shadow-lg rounded-lg p-6 text-red-500">
               <h1>Error: {error}</h1>
             </div>
@@ -574,7 +546,7 @@
 
       return (
         <div className="min-h-screen flex flex-col items-center justify-center p-4">
-          <div className="max-w-4xl w-full bg-white shadow-lg rounded-lg p-8">
+          <div className="max-w-4xl w-full content-container shadow-lg rounded-lg p-8">
             <h1 className="text-4xl font-bold text-center swirl-text">Color Personality Test</h1>
             <div className="mb-8 p-4 border rounded-lg bg-white shadow-sm">
               <h2 className="text-xl font-semibold text-primary mb-2">Enter Your Name</h2>
@@ -618,7 +590,11 @@
                 setRankings={setRankings}
               />
             ))}
-            {allQuestionsAnswered && <Results rankings={rankings} userName={userName} />}
+            {allQuestionsAnswered && (
+              <ErrorBoundary>
+                <Results rankings={rankings} userName={userName} />
+              </ErrorBoundary>
+            )}
           </div>
         </div>
       );
